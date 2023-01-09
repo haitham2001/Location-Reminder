@@ -85,7 +85,7 @@ dependencies {
 
     //Firebase
     implementation platform('com.google.firebase:firebase-bom:29.3.1')
-    implementation 'com.google.firebase:firebase-auth-ktx:21.0.3'
+    implementation 'com.google.firebase:firebase-auth-ktx:21.1.0'
     implementation 'com.firebaseui:firebase-ui-auth:8.0.0'
 
     // Dependencies for local unit tests
@@ -128,5 +128,7 @@ dependencies {
     implementation "com.google.android.gms:play-services-location:19.0.1"
     implementation "com.google.android.gms:play-services-maps:18.0.2"
 
-
+    // required to avoid crash on Android 12 API 31
+    implementation 'androidx.work:work-runtime-ktx:2.7.1'
+    implementation 'com.google.android.gms:play-services-auth:20.0.1'
 }
