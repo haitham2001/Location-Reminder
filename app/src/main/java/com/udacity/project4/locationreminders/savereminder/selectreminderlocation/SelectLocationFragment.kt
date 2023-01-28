@@ -197,12 +197,10 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback  {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         if (requestCode == REQUEST_LOCATION_PERMISSION) {
-            if (grantResults.isNotEmpty() && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                _viewModel.showToast.value = "coooollllinng"
+            if (grantResults.isNotEmpty() && (grantResults[0] == PackageManager.PERMISSION_GRANTED))
                 enableMyLocation()
-            }
             else
-                makeSnackBarWithSettingAction()
+                enableLocationSettingsSnackBar()
         }
     }
 
@@ -219,10 +217,10 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback  {
         }
     }
 
-    private fun makeSnackBarWithSettingAction() {
+    private fun enableLocationSettingsSnackBar() {
         Snackbar.make(
             requireView(),
-            "Please Enable your location permissions in the settings",
+            R.string.permission_denied_explanation,
             Snackbar.LENGTH_INDEFINITE
         ).setAction("settings") {
                 startActivity(Intent().apply {
@@ -241,7 +239,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback  {
             if (isPermissionGranted())
                 enableMyLocation()
             else
-                makeSnackBarWithSettingAction()
+                enableLocationSettingsSnackBar()
         }
     }
 
