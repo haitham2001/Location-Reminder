@@ -20,11 +20,4 @@ class MainCoroutineRule(private val dispatcher: TestCoroutineDispatcher = TestCo
         cleanupTestCoroutines()
         Dispatchers.resetMain()
     }
-
-    fun stop(){
-        this.pauseDispatcher()
-    }
-    fun reRun(){
-        this.resumeDispatcher()
-    }
 }

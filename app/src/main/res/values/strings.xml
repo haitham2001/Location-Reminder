@@ -43,4 +43,8 @@
     <string name="reminder_detail">Reminder Details</string>
     <string name="longitude">Longitude:</string>
     <string name="latitude">Latitude:</string>
+
+    <!-- Testing errors -->
+    <string name="no_reminders_error">Error: There are no reminders</string>
+    <string name="not_found_reminder">Error: Reminder not found</string>
 </resources>

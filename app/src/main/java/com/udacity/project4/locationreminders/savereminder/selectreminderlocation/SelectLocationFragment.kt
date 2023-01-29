@@ -229,7 +229,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback  {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 })
             }.show()
-
     }
 
     override fun onResume() {
