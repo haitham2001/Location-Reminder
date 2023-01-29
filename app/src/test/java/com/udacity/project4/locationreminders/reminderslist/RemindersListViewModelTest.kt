@@ -13,6 +13,7 @@ import kotlinx.coroutines.test.resumeDispatcher
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is.`is`
 import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -33,17 +34,16 @@ class RemindersListViewModelTest {
     var mainCoroutine = MainCoroutineRule()
 
     // Clean up after every test
-    @After
+    @Before
     fun setupViewModel() {
         stopKoin()
+        dataSource = FakeDataSource()
+        viewModel = RemindersListViewModel(ApplicationProvider.getApplicationContext(), dataSource)
     }
 
     // Checks the loading
     @Test
     fun loadReminders_checkLoading() {
-        // GIVEN: Initializing the data and view model
-        dataSource = FakeDataSource()
-        viewModel = RemindersListViewModel(ApplicationProvider.getApplicationContext(), dataSource)
 
         // WHEN
         mainCoroutine.pauseDispatcher()
@@ -61,9 +61,8 @@ class RemindersListViewModelTest {
     // Checks if data is null and if it is, it should print an error
     @Test
     fun loadReminders_ReturnError() {
-        dataSource = FakeDataSource(null)
-        viewModel = RemindersListViewModel(ApplicationProvider.getApplicationContext(), dataSource)
+        dataSource.shouldReturnError = true
         viewModel.loadReminders()
-        assertThat(viewModel.showSnackBar.getOrAwaitValue(), `is`("Error: There are no reminders"))
+        assertThat(viewModel.showSnackBar.getOrAwaitValue(), `is`("Exception: Failed to load data"))
     }
 }

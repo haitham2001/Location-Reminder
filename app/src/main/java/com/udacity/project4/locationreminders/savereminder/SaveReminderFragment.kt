@@ -14,6 +14,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -49,6 +50,13 @@ class SaveReminderFragment : BaseFragment() {
         binding.viewModel = _viewModel
 
         return binding.root
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == REQUEST_TURN_DEVICE_LOCATION_ON)
+            checkDeviceLocationSettingsAndStartGeofence()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -117,10 +125,15 @@ class SaveReminderFragment : BaseFragment() {
 
     private fun addGeofenceForClue(){
         val geofencingClient = LocationServices.getGeofencingClient(requireActivity())
+        // Check if the device's API is 31 or not, if so add mutable flag
+        var pendingIntentMutability = PendingIntent.FLAG_UPDATE_CURRENT
+        if(runningQOrLater)
+            pendingIntentMutability = pendingIntentMutability or PendingIntent.FLAG_MUTABLE
+
         val geofencePendingIntent: PendingIntent by lazy {
             val intent = Intent(requireContext(), GeofenceBroadcastReceiver::class.java)
             intent.action = GeofenceBroadcastReceiver.ACTION_GEOFENCE_EVENT
-            PendingIntent.getBroadcast(requireContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+            PendingIntent.getBroadcast(requireContext(), 0, intent, pendingIntentMutability)
         }
 
         val geofence = Geofence.Builder()
@@ -192,14 +205,11 @@ class SaveReminderFragment : BaseFragment() {
                 else -> REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE
             }
 
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                permissions,
-                resultCode
-            )
+            requestPermissions(permissions,resultCode)
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,

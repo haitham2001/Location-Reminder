@@ -6,32 +6,46 @@ import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.dto.Result
 
 //Use FakeDataSource that acts as a test double to the LocalDataSource
-class FakeDataSource(var tasks: MutableList<ReminderDTO>? = mutableListOf()) : ReminderDataSource {
+class FakeDataSource(private var tasks: MutableList<ReminderDTO> = mutableListOf()) : ReminderDataSource {
+
+    var shouldReturnError = false
 
     override suspend fun getReminders(): Result<List<ReminderDTO>> {
-        tasks?.let {
-            return Result.Success(it)
+        try{
+            if(shouldReturnError)
+                throw Exception("Exception: Failed to load data")
+            tasks.let {
+                return Result.Success(it)
+            }
+        } catch (ex: Exception) {
+            return Result.Error(ex.localizedMessage)
         }
-        return Result.Error("Error: There are no reminders")
     }
 
     override suspend fun saveReminder(reminder: ReminderDTO) {
-        tasks?.add(reminder)
+        tasks.add(reminder)
     }
 
     override suspend fun getReminder(id: String): Result<ReminderDTO> {
-        val isFound = tasks?.firstOrNull {
-            it.id == id
-        }
+        try {
+            if (shouldReturnError)
+                throw Exception("Exception: Failed to load data")
 
-        return if(isFound == null)
-            Result.Error("Error: Reminder not found")
-        else
-            Result.Success(isFound)
+            val isFound = tasks.firstOrNull {
+                it.id == id
+            }
+
+            return if (isFound == null)
+                Result.Error("Error: Reminder not found")
+            else
+                Result.Success(isFound)
+        } catch(ex: Exception) {
+            return Result.Error(ex.localizedMessage)
+        }
     }
 
     override suspend fun deleteAllReminders() {
-        tasks?.clear()
+        tasks.clear()
     }
 
 }
